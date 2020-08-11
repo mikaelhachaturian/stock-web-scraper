@@ -58,23 +58,34 @@ def print_all_prices(symbols):
 def define_parser():
     parser = argparse.ArgumentParser(
         description='Stock market web scraping tool.')
-
-    parser.add_argument('-t', '--time', dest='time', default=10,
-                        help='time (in seconds) to check stocks (default 10 seconds).')
+    parser.add_argument('-t', '--time', dest='time',
+                        help='time (in seconds) to check stocks.')
+    parser.add_argument('-l', '--list', action='store_true',
+                        help='list all prices for stocks.')
     return parser
+
+
+def list_prices(args):
+    symbols = read_symbols_file()
+    print(f"{bcolors.BOLD}---------------- Stock Market Web Scraper ----------------{bcolors.ENDC}")
+    if args.time:
+        print(f"{bcolors.WARNING}Waiting {args.time} seconds each cycle.{bcolors.ENDC}")
+        while True:
+            print(f"{bcolors.HEADER}-----{bcolors.ENDC}")
+            print_all_prices(symbols)
+            print(
+                f"{bcolors.HEADER}-----{bcolors.ENDC}\n")
+            time.sleep(int(args.time))
+    else:
+        print_all_prices(symbols)
 
 
 def main():
     args = define_parser().parse_args()
-    symbols = read_symbols_file()
-    print(f"{bcolors.BOLD}---------------- Stock Market Web Scraper ----------------{bcolors.ENDC}")
-    print(f"{bcolors.WARNING}Waiting {args.time} seconds each cycle.{bcolors.ENDC}")
-    while True:
-        print(f"{bcolors.HEADER}-----{bcolors.ENDC}")
-        print_all_prices(symbols)
-        print(
-            f"{bcolors.HEADER}-----{bcolors.ENDC}\n")
-        time.sleep(int(args.time))
+    if args.list:
+        list_prices(args)
+    else:
+        define_parser().print_help()
 
 
 if __name__ == '__main__':
