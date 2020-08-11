@@ -59,7 +59,7 @@ def define_parser():
     parser = argparse.ArgumentParser(
         description='Stock market web scraping tool.')
     parser.add_argument('-t', '--time', dest='time',
-                        help='time (in seconds) to check stocks.')
+                        help='time (in seconds) to check stocks in loop.')
     parser.add_argument('-l', '--list', action='store_true',
                         help='list all prices for stocks.')
     return parser
