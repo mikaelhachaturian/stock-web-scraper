@@ -19,12 +19,25 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 
-def get_price(url):
+def get_stock_info(url):
     r = requests.get(url)
     soup = bsoup(r.text, "lxml")
-    price = soup.find_all('div', {'class': 'My(6px) Pos(r) smartphone_Mt(6px)'})[
+    current_price = soup.find_all('div', {'class': 'My(6px) Pos(r) smartphone_Mt(6px)'})[
         0].find('span').text
-    return price
+    open_price = soup.find_all('td', {'class': 'Ta(end) Fw(600) Lh(14px)', 'data-test': 'OPEN-value'})[
+        0].find('span').text
+    try:
+        close_price = soup.find_all('td', {'class': 'Ta(end) Fw(600) Lh(14px)', 'data-test': 'PREV_CLOSE-value'})[
+            0].find('span').text
+    except:
+        close_price = "N/A (Currently open on market)"
+
+    stock_info = {
+        "current_price": current_price,
+        "open_price": open_price,
+        "close_price": close_price
+    }
+    return stock_info
 
 
 def read_symbols_file():
@@ -36,8 +49,10 @@ def read_symbols_file():
 
 def print_all_prices(symbols):
     for symbol in symbols:
+        stock_info = get_stock_info(YAHOO_URL.format(symbol))
         print(
-            f"current price for {bcolors.OKBLUE}{symbol}{bcolors.ENDC} stock is {bcolors.OKGREEN}${get_price(YAHOO_URL.format(symbol))}{bcolors.ENDC}")
+            "{2}current price{3} for {7}{2}{4}{3} is {1}${0}{3} | {2}opening price{3} = ${5} | {2}previous closing price{3} = ${6}. ".format(stock_info["current_price"], bcolors.OKGREEN, bcolors.OKBLUE, bcolors.ENDC,
+                                                                                                                                             symbol, stock_info["open_price"], stock_info["close_price"], bcolors.BOLD))
 
 
 def define_parser():
